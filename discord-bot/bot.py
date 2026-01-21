@@ -1,8 +1,12 @@
 import discord
 from discord.ext import commands
 import logging
+from utils.embed_factory import welcome_embed
 from dotenv import load_dotenv
+from config import WELCOME_CHANNEL_ID, REACTION_ROLES
 import os
+
+from utils.database import init_db
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -14,15 +18,12 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-@bot.event
-async def on_ready():
-    print(f"Logged in as lfgBot")
-
 async def setup_extensions():
     await bot.load_extension("cogs.reaction_roles")
 
 @bot.event
 async def setup_hook():
+    init_db()
     await setup_extensions()
 
 bot.run(TOKEN)

@@ -9,3 +9,7 @@ venv/
 
 # OS
 .DS_Store
+
+# SQLite database
+data/
+*.db
