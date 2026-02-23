@@ -9,7 +9,7 @@ def welcome_embed():
     ]
 
     embed = discord.Embed(
-        title="🎮 Choose Your Role",
+        title="🎮 Welcome to Sicilia's Server! Please choose Your Role",
         description="React to choose your role:\n\n" + "\n".join(lines),
         color=discord.Color.blurple(),
     )

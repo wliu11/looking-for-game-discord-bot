@@ -1,9 +1,7 @@
 import discord
 from discord.ext import commands
 import logging
-from utils.embed_factory import welcome_embed
 from dotenv import load_dotenv
-from config import WELCOME_CHANNEL_ID, REACTION_ROLES
 import os
 
 from utils.database import init_db
@@ -20,6 +18,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 async def setup_extensions():
     await bot.load_extension("cogs.reaction_roles")
+    await bot.load_extension("cogs.raiderio")
+
 
 @bot.event
 async def setup_hook():
