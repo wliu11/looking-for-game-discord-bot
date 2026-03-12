@@ -2,8 +2,10 @@ import discord
 from discord.ext import commands
 
 from discord import app_commands
+
+from utils.embed_builder import build_character_embed
 from utils.raiderio_parser import parse_raiderio_character_url
-from utils.raiderio_api import fetch_character_profile
+from utils.raiderio_api import fetch_character_profile, extract_mplus_score
 from utils.raiderio_validator import is_valid_raiderio_character
 
 class RaiderIO(commands.Cog):
@@ -40,24 +42,26 @@ class RaiderIO(commands.Cog):
                 parsed["realm"],
                 parsed["name"]
             )
+            print(data)
 
             # Find selected season score
-            selected_score = "Not Found"
+            print("Overall score:", data.get("mythic_plus_scores"))
+            print("By season:", data.get("mythic_plus_scores_by_season"))
 
-            for s in data.get("mythic_plus_scores_by_season", []):
-                if s["season"] == season.value:
-                    selected_score = s["scores"]["all"]
-                    break
+            selected_score = extract_mplus_score(data, season)
 
-            embed = discord.Embed(
-                title=f'{data["name"]} — {data["class"]}',
-                color=discord.Color.purple()
-            )
+            best_run = data.get("mythic_plus_best_runs", [])
 
-            embed.add_field(name="Realm", value=data["realm"], inline=True)
-            embed.add_field(name="Region", value=data["region"].upper(), inline=True)
-            embed.add_field(name="Mythic+ Score", value=selected_score, inline=False)
+            if best_run:
+                top_run = best_run[0]
+                dungeon = top_run["dungeon"]
+                level = top_run["mythic_level"]
+            else:
+                dungeon = "N/A"
+                level = "N/A"
 
+            embed = build_character_embed(data, selected_score)
+            embed.add_field(name="Best Key", value=f"+{level} {dungeon}", inline=False)
             embed.set_footer(text=f"Season: {season.name}")
 
             await interaction.followup.send(embed=embed)
